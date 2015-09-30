@@ -1,0 +1,114 @@
+---
+title: "名称未設定"
+output:
+  pdf_document:
+    latex_engine: xelatex
+  word_document: default
+  html_document: default
+  ioslides_presentation: default
+  slidy_presentation: default
+  beamer_presentation:
+    pandoc_args:
+    - --latex-engine
+    - xelatex
+documentclass: bxjsarticle
+classoption: xelatex,ja=standard
+geometry: no
+---
+
+<!-- 
+メモ：上記 YAML ヘッダでの TeX 環境指定内容の補足
+
+前提 TeX 環境は Complete インストールした MikTeX の XeLaTex である。
+
+documentclass には以下のいずれかを指定する。
+（日本組版のための BXjscls パッケージ で提供されている BXJS 文書クラス）
+* bxjsarticle ： 章のないレポート
+* bxjsreport ： 章のあるレポート
+* bxjsbook ： 書籍
+* bxjsslide ： スライド （使用可だが beamer_presentation を使ったほうが良いだろう）
+
+classoption でフォントサイズ、用紙サイズ、landscape などのパラメータを指定可能。
+詳細は
+* http://oku.edu.mie-u.ac.jp/~okumura/texwiki/?BXjscls
+* https://github.com/zr-tex8r/BXjscls/raw/master/bxjscls-manual.pdf
+を参照。
+
+YAML ヘッダで geometry は使用できない。no を指定しておくこと。
+（BXJS 文書クラスが内部的に使うため。上記マニュアルを参照。）
+
+TeX エンジンに LuaTeX を使いたい場合には３箇所の xelatex との部分を lualatex にする。
+
+-->
+
+
+```{r, include=FALSE}
+# 注意：このチャンク（バッククォート三つで囲われた部分）はファイルの先頭に置いておくこと。
+# このチャンクはセットアップのためのものである。不用意に描画命令は書かないこと。
+
+library(knitr)
+
+# 出力フォーマットが TeX（PDF含む）の場合のみ対処する
+if (knitr::opts_knit$get("rmarkdown.pandoc.to") %in% c("beamer", "latex")) {
+
+  # conversion failure on '...' in 'mbcsToSbcs' の Warning 発生の workaround
+  options(device = function(file, width = 7, height = 7, ...) {
+    cairo_pdf(tempfile(), width = width, height = height, ...)
+  })
+
+  # グラフ描画に日本語がサポートされているフォントを指定する
+  # * 次の 1 と 2 のどちらか一方を有効にする。
+  # * knitr の作者は cairo_pdf の方がベターだと言っている。
+  # * （この設定記述配布時点ではコンサバティブに 1 を採用。）
+
+  ## 1. dev="pdf" を使う方法
+  # * family に指定できる値は "Japan1", "Japan1HeiMin", "Japan1GothicBBB", "Japan1Ryumin" など
+  # * 詳細は pdfFonts() 関数のマニュアル参照。
+  knitr::opts_chunk$set(dev="pdf", dev.args=list(family="Japan1"))
+
+  ## 2. cairo_pdf を使う方法
+  # * family には Windows にインストールされているフォント名を指定する。
+  # * ここでは例として Meiryo を指定。（コントロールパネル > フォント 参照）
+  # knitr::opts_chunk$set(dev="cairo_pdf", dev.args=list(family="Meiryo"))
+}
+
+```
+
+
+以下は動作確認のための出力サンプルです。
+
+（この文を PDF, MS Word, HTML など整形済みの形式で見ている方へ：
+ここには設定情報は書かれていません。
+元になった R Markdown 形式を参照してください。）
+
+
+
+# 図のプロット例
+
+```{r}
+plot(cars, main="日本語の表題", xlab="ｘ軸ラベル", ylab="ｙ軸ラベル")
+```
+
+# 組版の動作確認
+
+この文は、一行が長くなった時に日本語の一般的な組版のルールに従って、日本語文字列の適当な場所で自動的な改行が補われ、適切に分割・配置されることの動作確認のためのものです。XeLaTex では処理系本体には組版を実装するための機構が用意されているだけで、別途の日本語組版知識を扱う TeX マクロを、個々の文書が明示的に取り込む必要があります。R Markdown ではヘッダ部分でそのための情報を適切に指定します。
+
+この文は文字間の空白の調節を確認するものです。（日本語文の組版では約物類の前後等で空白を調節するルールがあるとのこと。この場合、読点と括弧の連続にどのくらいの幅を与えるかが問題になります。）
+
+
+
+# 数式などの動作確認
+
+Inline equation の確認：
+ドル記号一つで LaTeX の数式表記を囲うとインラインの式表記になる。
+たとえば $a_0 = b_1$ のように。ドル記号のすぐ内側にスペースを書いてはいけないので注意。
+
+Display equation の確認：
+二つつなげたドル記号の間に LaTeX の数式表記を使うと独立した行として数式が置かれる。
+たとえば $$ \oint_C \mathbf{B} \cdot \mathrm{d}\boldsymbol{\ell} = \mu_0 \iint_S \mathbf{J} \cdot \mathrm{d}\mathbf{S} = \mu_0I_\mathrm{enc} $$ となる。
+
+
+指数表記の確認： superscript^2^
+
+インライン R コードの確認：
+car は R に同梱されているデータセットで行数は `r nrow(cars)` です。
