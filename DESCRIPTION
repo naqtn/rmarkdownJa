@@ -9,3 +9,5 @@ Description: This package just provides R Markdown template(s) file for writing 
     The template consists of YAML header, first chunk for setting up and example contents.
 License: MIT + file LICENSE
 LazyData: TRUE
+Depends:
+    rmarkdown

@@ -39,6 +39,8 @@ YAML ヘッダで geometry は使用できない。no を指定しておくこ�
 
 TeX エンジンに LuaTeX を使いたい場合には３箇所の xelatex との部分を lualatex にする。
 
+このテンプレートについて：
+https://github.com/naqtn/rmarkdownJa/blob/master/README.md
 -->
 
 
